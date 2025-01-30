@@ -4,7 +4,7 @@
 use multiversx_sc::imports::*;
 
 #[multiversx_sc::contract]
-pub trait JexScRaffleV2 {
+pub trait JexScRaffleV2: multiversx_sc_modules::pause::PauseModule {
     #[init]
     fn init(&self) {}
 

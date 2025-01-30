@@ -8,6 +8,9 @@ authors = ["you"]
 [lib]
 path = "src/jex_sc_raffle_v_2.rs"
 
+[dependencies]
+multiversx-sc-modules = "0.56.0"
+
 [dependencies.multiversx-sc]
 version = "0.56.0"
 

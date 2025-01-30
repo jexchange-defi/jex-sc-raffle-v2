@@ -43,6 +43,7 @@ name = "jex-sc-raffle-v-2"
 version = "0.0.0"
 dependencies = [
  "multiversx-sc",
+ "multiversx-sc-modules",
 ]
 
 [[package]]
@@ -112,6 +113,15 @@ dependencies = [
  "quote",
  "radix_trie",
  "syn",
+]
+
+[[package]]
+name = "multiversx-sc-modules"
+version = "0.56.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1916028cedcc18fd31c38aa9f53ca9e2aa0aae3c551532bafe67510f38262a8f"
+dependencies = [
+ "multiversx-sc",
 ]
 
 [[package]]
