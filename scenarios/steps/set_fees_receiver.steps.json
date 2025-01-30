@@ -1,0 +1,21 @@
+{
+  "steps": [
+    {
+      "step": "scCall",
+      "tx": {
+        "from": "address:owner",
+        "to": "sc:raffles",
+        "function": "setFeesReceiver",
+        "arguments": ["address:fees"],
+        "gasLimit": "10,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "status": "0",
+        "message": "",
+        "gas": "*",
+        "refund": "*"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "step": "externalSteps",
+      "path": "jex_sc_raffles.scen.json"
+    },
+    {
+      "step": "externalSteps",
+      "path": "steps/set_raffle_creation_fee.steps.json"
+    },
+    {
+      "step": "checkState",
+      "accounts": {
+        "sc:raffles": {
+          "nonce": "0",
+          "balance": "0",
+          "code": "*",
+          "storage": {
+            "str:raffle_creation_fee": "1,000,000,000,000,000,000",
+            "+": "*"
+          }
+        },
+        "+": ""
+      }
+    }
+  ]
+}

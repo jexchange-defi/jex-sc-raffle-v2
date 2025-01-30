@@ -1,0 +1,34 @@
+{
+  "steps": [
+    {
+      "step": "externalSteps",
+      "path": "jex_sc_raffles.scen.json"
+    },
+    {
+      "step": "setState",
+      "accounts": {
+        "address:anon": {
+          "nonce": "0",
+          "balance": "0"
+        }
+      }
+    },
+    {
+      "step": "scCall",
+      "tx": {
+        "from": "address:anon",
+        "to": "sc:raffles",
+        "function": "setFeesReceiver",
+        "arguments": ["address:anon"],
+        "gasLimit": "10,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "status": "4",
+        "message": "str:Endpoint can only be called by admins",
+        "gas": "*",
+        "refund": "*"
+      }
+    }
+  ]
+}

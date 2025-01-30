@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           13
+// Endpoints:                           17
 // Async Callback (empty):               1
-// Total number of exported functions:  16
+// Total number of exported functions:  20
 
 #![no_std]
 
@@ -33,6 +33,10 @@ multiversx_sc_wasm_adapter::endpoints! {
         getFeesReceiver => fees_receiver
         getProtocolFeePercent => protocol_fee_percent
         getRaffleCreationFee => raffle_creation_fee
+        getRaffles => get_raffles
+        getRaffle => raffles
+        getRaffleIdCounter => raffle_id_counter
+        createRaffle => create_raffle_endpoint
     )
 }
 

@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "step": "externalSteps",
+      "path": "jex_sc_raffles.scen.json"
+    },
+    {
+      "step": "externalSteps",
+      "path": "steps/set_protocol_fee_percent.steps.json"
+    },
+    {
+      "step": "checkState",
+      "accounts": {
+        "sc:raffles": {
+          "nonce": "0",
+          "balance": "0",
+          "code": "*",
+          "storage": {
+            "str:protocol_fee_percent": "10",
+            "+": "*"
+          }
+        },
+        "+": ""
+      }
+    }
+  ]
+}

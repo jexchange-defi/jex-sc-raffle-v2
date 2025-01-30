@@ -2,6 +2,24 @@ multiversx_sc::imports!();
 
 #[multiversx_sc::module]
 pub trait FeesModule {
+    fn require_creation_fee_payment(&self) -> BigUint {
+        let egld_payment = self.call_value().egld().clone_value();
+
+        require!(
+            egld_payment == self.raffle_creation_fee().get(),
+            "Invalid payment"
+        );
+
+        egld_payment
+    }
+
+    fn send_fee(&self, egld_payment: &BigUint) {
+        if egld_payment > &0 {
+            self.send()
+                .direct_egld(&self.fees_receiver().get(), &egld_payment);
+        }
+    }
+
     fn set_fees_receiver(&self, receiver: &ManagedAddress) {
         self.fees_receiver().set(receiver.clone());
     }
