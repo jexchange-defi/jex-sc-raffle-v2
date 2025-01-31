@@ -20,8 +20,22 @@ pub struct Raffle<M: ManagedTypeApi> {
     nb_winning_tickets: u16,
     burn_percent: u8,
     description: ManagedBuffer<M>,
-    winners: ManagedVec<M, ManagedAddress<M>>,
 }
+
+// #[type_abi]
+// #[derive(TopDecode, TopEncode)]
+// pub struct RaffleSales<M: ManagedTypeApi> {
+//     nb_tickets_sold: u32,
+//     prize_amount: BigUint<M>,
+//     burned_amount: BigUint<M>,
+// }
+
+// #[type_abi]
+// #[derive(TopDecode, TopEncode)]
+// pub struct RaffleResults<M: ManagedTypeApi> {
+//     amount_per_winning_tickets: BigUint<M>,
+//     winners: ManagedVec<M, ManagedAddress<M>>,
+// }
 
 #[multiversx_sc::module]
 pub trait RafflesModule {
@@ -63,7 +77,6 @@ pub trait RafflesModule {
             nb_winning_tickets,
             burn_percent,
             description,
-            winners: ManagedVec::<Self::Api, ManagedAddress>::new(),
         };
 
         self.raffles(raffle_id).set(&raffle);

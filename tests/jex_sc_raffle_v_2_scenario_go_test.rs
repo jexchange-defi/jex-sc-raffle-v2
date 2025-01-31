@@ -5,6 +5,16 @@ fn world() -> ScenarioWorld {
 }
 
 #[test]
+fn create_raffle_go() {
+    world().run("scenarios/create_raffle.scen.json");
+}
+
+#[test]
+fn create_raffle_2_nd_go() {
+    world().run("scenarios/create_raffle_2nd.scen.json");
+}
+
+#[test]
 fn create_raffle_errors_go() {
     world().run("scenarios/create_raffle_errors.scen.json");
 }

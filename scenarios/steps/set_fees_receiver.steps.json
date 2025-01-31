@@ -1,6 +1,15 @@
 {
   "steps": [
     {
+      "step": "setState",
+      "accounts": {
+        "address:fees": {
+          "nonce": "0",
+          "balance": "0"
+        }
+      }
+    },
+    {
       "step": "scCall",
       "tx": {
         "from": "address:owner",

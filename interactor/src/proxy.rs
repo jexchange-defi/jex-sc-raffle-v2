@@ -305,5 +305,4 @@ where
     pub nb_winning_tickets: u16,
     pub burn_percent: u8,
     pub description: ManagedBuffer<Api>,
-    pub winners: ManagedVec<Api, ManagedAddress<Api>>,
 }
