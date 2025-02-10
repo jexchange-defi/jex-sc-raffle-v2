@@ -13,11 +13,40 @@ pub trait FeesModule {
         egld_payment
     }
 
-    fn send_fee(&self, egld_payment: &BigUint) {
-        if egld_payment > &0 {
-            self.send()
-                .direct_egld(&self.fees_receiver().get(), &egld_payment);
-        }
+    fn send_egld_fee(&self, egld_payment: &BigUint) {
+        self.send_fee(&EgldOrEsdtTokenPayment::new(
+            EgldOrEsdtTokenIdentifier::egld(),
+            0u64,
+            egld_payment.clone(),
+        ));
+    }
+
+    fn send_fee(&self, payment: &EgldOrEsdtTokenPayment) {
+        self.send().direct_non_zero(
+            &self.fees_receiver().get(),
+            &payment.token_identifier,
+            payment.token_nonce,
+            &payment.amount,
+        );
+    }
+
+    fn take_protocol_fee_from_payment(
+        &self,
+        payment: &EgldOrEsdtTokenPayment,
+    ) -> EgldOrEsdtTokenPayment {
+        let fee_amount = payment.amount.clone() * self.protocol_fee_percent().get() / 100u32;
+
+        self.send_fee(&EgldOrEsdtTokenPayment::new(
+            payment.token_identifier.clone(),
+            payment.token_nonce,
+            fee_amount.clone(),
+        ));
+
+        EgldOrEsdtTokenPayment::new(
+            payment.token_identifier.clone(),
+            payment.token_nonce,
+            payment.amount.clone() - fee_amount,
+        )
     }
 
     fn set_fees_receiver(&self, receiver: &ManagedAddress) {

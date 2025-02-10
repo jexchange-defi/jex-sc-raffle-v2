@@ -12,6 +12,11 @@ fn world() -> ScenarioWorld {
 }
 
 #[test]
+fn buy_tickets_egld_rs() {
+    world().run("scenarios/buy_tickets_egld.scen.json");
+}
+
+#[test]
 fn create_raffle_rs() {
     world().run("scenarios/create_raffle.scen.json");
 }
@@ -19,6 +24,11 @@ fn create_raffle_rs() {
 #[test]
 fn create_raffle_2_nd_rs() {
     world().run("scenarios/create_raffle_2nd.scen.json");
+}
+
+#[test]
+fn create_raffle_egld_rs() {
+    world().run("scenarios/create_raffle_egld.scen.json");
 }
 
 #[test]
@@ -32,8 +42,23 @@ fn create_raffle_invalid_payment_rs() {
 }
 
 #[test]
-fn jex_sc_raffles_rs() {
-    world().run("scenarios/jex_sc_raffles.scen.json");
+fn deploy_rs() {
+    world().run("scenarios/deploy.scen.json");
+}
+
+#[test]
+fn init_rs() {
+    world().run("scenarios/init.scen.json");
+}
+
+#[test]
+fn issue_ticket_collection_rs() {
+    world().run("scenarios/issue_ticket_collection.scen.json");
+}
+
+#[test]
+fn issue_ticket_collection_not_admin_rs() {
+    world().run("scenarios/issue_ticket_collection_not_admin.scen.json");
 }
 
 #[test]

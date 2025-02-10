@@ -1,0 +1,34 @@
+{
+  "steps": [
+    {
+      "step": "setState",
+      "accounts": {
+        "address:dead": {
+          "nonce": "0",
+          "balance": "0"
+        },
+        "address:owner": {
+          "nonce": "1",
+          "balance": "0"
+        },
+        "sc:raffles": {
+          "code": "file:../output/jex-sc-raffle-v-2.wasm",
+          "esdt": {
+            "str:TCOLL-000000": {
+              "lastNonce": "0",
+              "roles": ["ESDTRoleNFTCreate"]
+            }
+          },
+          "owner": "address:owner",
+          "storage": {
+            "str:dead_address": "address:dead",
+            "str:only_admin_module:admins.len": "u32:1",
+            "str:only_admin_module:admins.item|u32:1": "address:owner",
+            "str:only_admin_module:admins.index|address:owner": "u32:1",
+            "str:ticket_collection_id": "str:TCOLL-000000"
+          }
+        }
+      }
+    }
+  ]
+}

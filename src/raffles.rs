@@ -15,20 +15,20 @@ pub struct Raffle<M: ManagedTypeApi> {
     owner: ManagedAddress<M>,
     start_timestamp: u64,
     end_timestamp: u64,
-    ticket_token_identifier: TokenIdentifier<M>,
+    ticket_token_identifier: EgldOrEsdtTokenIdentifier<M>,
     ticket_price: BigUint<M>,
     nb_winning_tickets: u16,
     burn_percent: u8,
     description: ManagedBuffer<M>,
 }
 
-// #[type_abi]
-// #[derive(TopDecode, TopEncode)]
-// pub struct RaffleSales<M: ManagedTypeApi> {
-//     nb_tickets_sold: u32,
-//     prize_amount: BigUint<M>,
-//     burned_amount: BigUint<M>,
-// }
+#[type_abi]
+#[derive(TopDecode, TopEncode)]
+pub struct TicketSales<M: ManagedTypeApi> {
+    nb_tickets_sold: u32,
+    prize_amount: BigUint<M>,
+    burned_amount: BigUint<M>,
+}
 
 // #[type_abi]
 // #[derive(TopDecode, TopEncode)]
@@ -38,13 +38,15 @@ pub struct Raffle<M: ManagedTypeApi> {
 // }
 
 #[multiversx_sc::module]
-pub trait RafflesModule {
+pub trait RafflesModule:
+    crate::burn::BurnModule + crate::fees::FeesModule + crate::tickets::TicketsModule
+{
     fn create_raffle(
         &self,
         user: &ManagedAddress,
         duration_seconds: u64,
         description: ManagedBuffer,
-        ticket_token_identifier: TokenIdentifier,
+        ticket_token_identifier: EgldOrEsdtTokenIdentifier,
         ticket_price: BigUint,
         nb_winning_tickets: u16,
         burn_percent: u8,
@@ -81,7 +83,66 @@ pub trait RafflesModule {
 
         self.raffles(raffle_id).set(&raffle);
 
+        self.ticket_sales(raffle_id).set(&TicketSales {
+            nb_tickets_sold: 0u32,
+            prize_amount: BigUint::zero(),
+            burned_amount: BigUint::zero(),
+        });
+
         raffle_id
+    }
+
+    fn buy_raffle_tickets(
+        &self,
+        user: &ManagedAddress,
+        payment: &EgldOrEsdtTokenPayment,
+        raffle_id: u64,
+        nb_tickets: u16,
+    ) {
+        let raffle_mapper = self.raffles(raffle_id);
+
+        require!(!raffle_mapper.is_empty(), "Raffle not found");
+
+        let raffle = raffle_mapper.get();
+
+        let now = self.blockchain().get_block_timestamp();
+
+        require!(
+            raffle.start_timestamp <= now && now <= raffle.end_timestamp,
+            "Not in tickets sale period"
+        );
+
+        let expected_payment = EgldOrEsdtTokenPayment::new(
+            raffle.ticket_token_identifier,
+            0u64,
+            raffle.ticket_price * nb_tickets as u32,
+        );
+
+        require!(&expected_payment == payment, "Invalid payment");
+
+        let payment_minus_fee = self.take_protocol_fee_from_payment(payment);
+
+        let burn_amount = payment_minus_fee.amount.clone() * raffle.burn_percent as u32 / 100u32;
+
+        let prize_amount = payment_minus_fee.amount.clone() - burn_amount.clone();
+
+        let mut ticket_sales = self.ticket_sales(raffle_id).get();
+
+        let last_ticket_sold = ticket_sales.nb_tickets_sold;
+
+        ticket_sales.nb_tickets_sold += nb_tickets as u32;
+        ticket_sales.burned_amount += burn_amount.clone();
+        ticket_sales.prize_amount += prize_amount;
+
+        self.ticket_sales(raffle_id).set(&ticket_sales);
+
+        self.issue_and_send_tickets(raffle_id, last_ticket_sold, nb_tickets, user);
+
+        self.burn(&EgldOrEsdtTokenPayment::new(
+            payment.token_identifier.clone(),
+            payment.token_nonce,
+            burn_amount.clone(),
+        ));
     }
 
     fn get_next_raffle_id(&self) -> u64 {
@@ -110,6 +171,10 @@ pub trait RafflesModule {
     #[view(getRaffle)]
     #[storage_mapper("raffles")]
     fn raffles(&self, id: u64) -> SingleValueMapper<Raffle<Self::Api>>;
+
+    #[view(getTicketSales)]
+    #[storage_mapper("ticket_sales")]
+    fn ticket_sales(&self, id: u64) -> SingleValueMapper<TicketSales<Self::Api>>;
 
     #[view(getRaffleIdCounter)]
     #[storage_mapper("raffle_id_counter")]

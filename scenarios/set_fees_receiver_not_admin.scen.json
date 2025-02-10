@@ -2,7 +2,7 @@
   "steps": [
     {
       "step": "externalSteps",
-      "path": "jex_sc_raffles.scen.json"
+      "path": "deploy.scen.json"
     },
     {
       "step": "setState",

@@ -3,7 +3,9 @@ use multiversx_sc::imports::*;
 
 #[multiversx_sc::module]
 pub trait AdminActionsModule:
-    multiversx_sc_modules::only_admin::OnlyAdminModule + crate::fees::FeesModule
+    multiversx_sc_modules::only_admin::OnlyAdminModule
+    + crate::fees::FeesModule
+    + crate::tickets::TicketsModule
 {
     #[endpoint(setFeesReceiver)]
     fn set_fees_receiver_endpoint(&self, receiver: &ManagedAddress) {
@@ -24,5 +26,13 @@ pub trait AdminActionsModule:
         self.require_caller_is_admin();
 
         self.set_raffle_creation_fee(fee);
+    }
+
+    #[payable("EGLD")]
+    #[endpoint(issueTicketCollection)]
+    fn issue_ticket_collection_endpoint(&self) {
+        self.require_caller_is_admin();
+
+        self.issue_ticket_collection();
     }
 }
