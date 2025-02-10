@@ -128,7 +128,7 @@ pub trait RafflesModule:
 
         let mut ticket_sales = self.ticket_sales(raffle_id).get();
 
-        let last_ticket_sold = ticket_sales.nb_tickets_sold;
+        let next_ticket = ticket_sales.nb_tickets_sold + 1u32;
 
         ticket_sales.nb_tickets_sold += nb_tickets as u32;
         ticket_sales.burned_amount += burn_amount.clone();
@@ -136,7 +136,7 @@ pub trait RafflesModule:
 
         self.ticket_sales(raffle_id).set(&ticket_sales);
 
-        self.issue_and_send_tickets(raffle_id, last_ticket_sold, nb_tickets, user);
+        self.issue_and_send_tickets(raffle_id, next_ticket, nb_tickets, user);
 
         self.burn(&EgldOrEsdtTokenPayment::new(
             payment.token_identifier.clone(),

@@ -17,6 +17,11 @@ fn buy_tickets_egld_rs() {
 }
 
 #[test]
+fn buy_tickets_egld_2_rs() {
+    world().run("scenarios/buy_tickets_egld_2.scen.json");
+}
+
+#[test]
 fn create_raffle_rs() {
     world().run("scenarios/create_raffle.scen.json");
 }

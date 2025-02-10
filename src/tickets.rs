@@ -33,7 +33,7 @@ pub trait TicketsModule {
     fn issue_and_send_tickets(
         &self,
         raffle_id: u64,
-        first_ticket: u32,
+        next_ticket: u32,
         nb_tickets: u16,
         user: &ManagedAddress,
     ) {
@@ -44,11 +44,11 @@ pub trait TicketsModule {
 
         let collection_id = self.ticket_collection_id().get_token_id();
 
-        let last_ticket = first_ticket + nb_tickets as u32;
+        let last_ticket = next_ticket + nb_tickets as u32 - 1u32;
 
         let attributes = TicketAttributes {
             raffle_id,
-            first_ticket,
+            first_ticket: next_ticket,
             last_ticket,
         };
 
