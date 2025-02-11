@@ -22,6 +22,21 @@ fn buy_tickets_egld_2_rs() {
 }
 
 #[test]
+fn buy_tickets_raffle_ended_rs() {
+    world().run("scenarios/buy_tickets_raffle_ended.scen.json");
+}
+
+#[test]
+fn buy_tickets_raffle_invalid_payment_rs() {
+    world().run("scenarios/buy_tickets_raffle_invalid_payment.scen.json");
+}
+
+#[test]
+fn buy_tickets_raffle_not_found_rs() {
+    world().run("scenarios/buy_tickets_raffle_not_found.scen.json");
+}
+
+#[test]
 fn create_raffle_rs() {
     world().run("scenarios/create_raffle.scen.json");
 }

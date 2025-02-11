@@ -195,6 +195,23 @@ where
             .original_result()
     }
 
+    pub fn issue_ticket_collection_endpoint(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("issueTicketCollection")
+            .original_result()
+    }
+
+    pub fn dead_address(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ManagedAddress<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getDeadAddress")
+            .original_result()
+    }
+
     pub fn fees_receiver(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ManagedAddress<Env::Api>> {
@@ -251,6 +268,19 @@ where
             .original_result()
     }
 
+    pub fn ticket_sales<
+        Arg0: ProxyArg<u64>,
+    >(
+        self,
+        id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TicketSales<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getTicketSales")
+            .argument(&id)
+            .original_result()
+    }
+
     pub fn raffle_id_counter(
         self,
     ) -> TxTypedCall<Env, From, To, NotPayable, Gas, u64> {
@@ -260,12 +290,21 @@ where
             .original_result()
     }
 
+    pub fn ticket_collection_id(
+        self,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, TokenIdentifier<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getTicketCollectionId")
+            .original_result()
+    }
+
     /// Create a raffle 
     /// burn_percent: % of burn once protocol fees are deducted. 
     pub fn create_raffle_endpoint<
         Arg0: ProxyArg<u64>,
         Arg1: ProxyArg<ManagedBuffer<Env::Api>>,
-        Arg2: ProxyArg<TokenIdentifier<Env::Api>>,
+        Arg2: ProxyArg<EgldOrEsdtTokenIdentifier<Env::Api>>,
         Arg3: ProxyArg<BigUint<Env::Api>>,
         Arg4: ProxyArg<u16>,
         Arg5: ProxyArg<u8>,
@@ -288,6 +327,21 @@ where
             .argument(&burn_percent)
             .original_result()
     }
+
+    pub fn buy_tickets_endpoint<
+        Arg0: ProxyArg<u64>,
+        Arg1: ProxyArg<u16>,
+    >(
+        self,
+        raffle_id: Arg0,
+        nb_tickets: Arg1,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("buyTickets")
+            .argument(&raffle_id)
+            .argument(&nb_tickets)
+            .original_result()
+    }
 }
 
 #[type_abi]
@@ -300,9 +354,20 @@ where
     pub owner: ManagedAddress<Api>,
     pub start_timestamp: u64,
     pub end_timestamp: u64,
-    pub ticket_token_identifier: TokenIdentifier<Api>,
+    pub ticket_token_identifier: EgldOrEsdtTokenIdentifier<Api>,
     pub ticket_price: BigUint<Api>,
     pub nb_winning_tickets: u16,
     pub burn_percent: u8,
     pub description: ManagedBuffer<Api>,
+}
+
+#[type_abi]
+#[derive(TopDecode, TopEncode)]
+pub struct TicketSales<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub nb_tickets_sold: u32,
+    pub prize_amount: BigUint<Api>,
+    pub burned_amount: BigUint<Api>,
 }
