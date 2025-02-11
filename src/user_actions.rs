@@ -59,4 +59,14 @@ pub trait UserActionsModule:
 
         self.pick_raffle_winners(raffle_id);
     }
+
+    #[payable]
+    #[endpoint(claim)]
+    fn claim_endpoint(&self) {
+        self.require_not_paused();
+
+        let payments = self.call_value().all_esdt_transfers().clone_value();
+
+        self.claim_multi(&self.blockchain().get_caller(), &payments);
+    }
 }

@@ -34,6 +34,14 @@ pub trait BurnModule {
         }
     }
 
+    fn burn_ticket(&self, payment: &EsdtTokenPayment) {
+        self.send().esdt_local_burn(
+            &payment.token_identifier,
+            payment.token_nonce,
+            &BigUint::from(1u32),
+        );
+    }
+
     #[view(getDeadAddress)]
     #[storage_mapper("dead_address")]
     fn dead_address(&self) -> SingleValueMapper<ManagedAddress>;

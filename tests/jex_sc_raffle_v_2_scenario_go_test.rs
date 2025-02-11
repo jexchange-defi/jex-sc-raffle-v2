@@ -35,6 +35,26 @@ fn buy_tickets_raffle_not_found_go() {
 }
 
 #[test]
+fn claim_errors_go() {
+    world().run("scenarios/claim_errors.scen.json");
+}
+
+#[test]
+fn claim_not_winner_go() {
+    world().run("scenarios/claim_not_winner.scen.json");
+}
+
+#[test]
+fn claim_winner_go() {
+    world().run("scenarios/claim_winner.scen.json");
+}
+
+#[test]
+fn claim_winner_multi_go() {
+    world().run("scenarios/claim_winner_multi.scen.json");
+}
+
+#[test]
 fn create_raffle_go() {
     world().run("scenarios/create_raffle.scen.json");
 }

@@ -1,14 +1,16 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
+use multiversx_sc::contract_base::ManagedSerializer;
+
 const TICKET_COLLECTION_DISPLAY_NAME: &[u8] = b"JEX Raffle Ticket";
 const TICKET_COLLECTION_TICKER: &[u8] = b"JEXRAFT";
 
 #[derive(TopDecode, TopEncode)]
 pub struct TicketAttributes {
-    raffle_id: u64,
-    first_ticket: u32,
-    last_ticket: u32,
+    pub raffle_id: u64,
+    pub first_ticket: u32,
+    pub last_ticket: u32,
 }
 
 #[multiversx_sc::module]
@@ -75,6 +77,15 @@ pub trait TicketsModule {
 
         self.send()
             .direct_esdt(&user, &collection_id, nft_nonce, &BigUint::from(1u32));
+    }
+
+    fn decode_ticket_attributes(&self, serialized_attributes: &ManagedBuffer) -> TicketAttributes {
+        let serializer = ManagedSerializer::new();
+
+        serializer.top_decode_from_managed_buffer_custom_message(
+            serialized_attributes,
+            "Invalid NFT attributes",
+        )
     }
 
     #[view(getTicketCollectionId)]

@@ -16,7 +16,7 @@
           "esdt": {
             "str:TCOLL-000000": {
               "lastNonce": "0",
-              "roles": ["ESDTRoleNFTCreate"]
+              "roles": ["ESDTRoleNFTBurn", "ESDTRoleNFTCreate"]
             }
           },
           "owner": "address:owner",

@@ -4,7 +4,7 @@ multiversx_sc::derive_imports!();
 const MAX_BURN_PERCENT: u8 = 100u8;
 
 const MIN_DURATION_SECONDS: u64 = 3_000u64;
-const MAX_DURATION_SECONDS: u64 = 2_592_000u64;
+const MAX_DURATION_SECONDS: u64 = 2_592_000u64; // 30 days
 
 const MAX_WINNING_TICKETS_PER_RAFFLE: u16 = 100u16;
 
@@ -179,6 +179,50 @@ pub trait RafflesModule:
         };
 
         results_mapper.set(&raffle_results);
+    }
+
+    fn claim_multi(&self, user: &ManagedAddress, payments: &ManagedVec<EsdtTokenPayment>) {
+        for payment in payments {
+            self.claim(user, &payment);
+        }
+    }
+
+    fn claim(&self, user: &ManagedAddress, ticket_payment: &EsdtTokenPayment) {
+        require!(
+            self.ticket_collection_id().get_token_id() == ticket_payment.token_identifier,
+            "Invalid collection ID"
+        );
+
+        let nft_attributes = self.blockchain().get_esdt_token_data(
+            &self.blockchain().get_sc_address(),
+            &ticket_payment.token_identifier,
+            ticket_payment.token_nonce,
+        );
+
+        let ticket_attributes = self.decode_ticket_attributes(&nft_attributes.attributes);
+
+        let results_mapper = self.raffle_results(ticket_attributes.raffle_id);
+
+        require!(!results_mapper.is_empty(), "Winners not picked");
+
+        let raffle_results = results_mapper.get();
+
+        let raffle = self.raffles(ticket_attributes.raffle_id).get();
+
+        let mut amount_out = BigUint::zero();
+
+        for ticket_id in raffle_results.winning_tickets {
+            if ticket_id >= ticket_attributes.first_ticket
+                && ticket_id <= ticket_attributes.last_ticket
+            {
+                amount_out += raffle_results.amount_per_winning_ticket.clone();
+            }
+        }
+
+        self.burn_ticket(ticket_payment);
+
+        self.send()
+            .direct_non_zero(user, &raffle.ticket_token_identifier, 0u64, &amount_out);
     }
 
     fn get_next_raffle_id(&self) -> u64 {
