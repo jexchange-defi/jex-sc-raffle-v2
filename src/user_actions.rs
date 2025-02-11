@@ -7,6 +7,7 @@ pub trait UserActionsModule:
     + crate::burn::BurnModule
     + crate::fees::FeesModule
     + crate::raffles::RafflesModule
+    + crate::random::RandomModule
     + crate::tickets::TicketsModule
 {
     /// Create a raffle
@@ -50,5 +51,12 @@ pub trait UserActionsModule:
             raffle_id,
             nb_tickets,
         );
+    }
+
+    #[endpoint(pickWinners)]
+    fn pick_winners_endpoint(&self, raffle_id: u64) {
+        self.require_not_paused();
+
+        self.pick_raffle_winners(raffle_id);
     }
 }

@@ -9,6 +9,7 @@ mod admin_actions;
 mod burn;
 mod fees;
 mod raffles;
+mod random;
 mod tickets;
 mod user_actions;
 
@@ -20,6 +21,7 @@ pub trait JexScRaffleV2:
     + burn::BurnModule
     + fees::FeesModule
     + raffles::RafflesModule
+    + random::RandomModule
     + tickets::TicketsModule
     + user_actions::UserActionsModule
 {

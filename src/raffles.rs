@@ -30,16 +30,19 @@ pub struct TicketSales<M: ManagedTypeApi> {
     burned_amount: BigUint<M>,
 }
 
-// #[type_abi]
-// #[derive(TopDecode, TopEncode)]
-// pub struct RaffleResults<M: ManagedTypeApi> {
-//     amount_per_winning_tickets: BigUint<M>,
-//     winners: ManagedVec<M, ManagedAddress<M>>,
-// }
+#[type_abi]
+#[derive(TopDecode, TopEncode)]
+pub struct RaffleResults<M: ManagedTypeApi> {
+    amount_per_winning_ticket: BigUint<M>,
+    winning_tickets: ManagedVec<M, u32>,
+}
 
 #[multiversx_sc::module]
 pub trait RafflesModule:
-    crate::burn::BurnModule + crate::fees::FeesModule + crate::tickets::TicketsModule
+    crate::burn::BurnModule
+    + crate::fees::FeesModule
+    + crate::random::RandomModule
+    + crate::tickets::TicketsModule
 {
     fn create_raffle(
         &self,
@@ -145,6 +148,39 @@ pub trait RafflesModule:
         ));
     }
 
+    fn pick_raffle_winners(&self, raffle_id: u64) {
+        let raffle_mapper = self.raffles(raffle_id);
+
+        require!(!raffle_mapper.is_empty(), "Raffle not found");
+
+        let raffle = raffle_mapper.get();
+
+        require!(raffle.owner == self.blockchain().get_caller(), "Not owner");
+
+        let now = self.blockchain().get_block_timestamp();
+
+        require!(now > raffle.end_timestamp, "Still in tickets sale period");
+
+        let tickets_sales = self.ticket_sales(raffle_id).get();
+
+        let results_mapper = self.raffle_results(raffle_id);
+
+        require!(results_mapper.is_empty(), "Winners already picked");
+
+        let amount_per_winning_ticket =
+            tickets_sales.prize_amount / (raffle.nb_winning_tickets as u32);
+
+        let winning_tickets =
+            self.pick_random_ids(tickets_sales.nb_tickets_sold, raffle.nb_winning_tickets);
+
+        let raffle_results = RaffleResults {
+            amount_per_winning_ticket,
+            winning_tickets,
+        };
+
+        results_mapper.set(&raffle_results);
+    }
+
     fn get_next_raffle_id(&self) -> u64 {
         let current = self.raffle_id_counter().get();
 
@@ -175,6 +211,10 @@ pub trait RafflesModule:
     #[view(getTicketSales)]
     #[storage_mapper("ticket_sales")]
     fn ticket_sales(&self, id: u64) -> SingleValueMapper<TicketSales<Self::Api>>;
+
+    #[view(getRaffleResults)]
+    #[storage_mapper("raffle_results")]
+    fn raffle_results(&self, id: u64) -> SingleValueMapper<RaffleResults<Self::Api>>;
 
     #[view(getRaffleIdCounter)]
     #[storage_mapper("raffle_id_counter")]

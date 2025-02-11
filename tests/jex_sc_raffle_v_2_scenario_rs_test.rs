@@ -22,6 +22,11 @@ fn buy_tickets_egld_2_rs() {
 }
 
 #[test]
+fn buy_tickets_egld_3_rs() {
+    world().run("scenarios/buy_tickets_egld_3.scen.json");
+}
+
+#[test]
 fn buy_tickets_raffle_ended_rs() {
     world().run("scenarios/buy_tickets_raffle_ended.scen.json");
 }
@@ -79,6 +84,26 @@ fn issue_ticket_collection_rs() {
 #[test]
 fn issue_ticket_collection_not_admin_rs() {
     world().run("scenarios/issue_ticket_collection_not_admin.scen.json");
+}
+
+#[test]
+fn pick_winners_rs() {
+    world().run("scenarios/pick_winners.scen.json");
+}
+
+#[test]
+fn pick_winners_not_ended_rs() {
+    world().run("scenarios/pick_winners_not_ended.scen.json");
+}
+
+#[test]
+fn pick_winners_not_owner_rs() {
+    world().run("scenarios/pick_winners_not_owner.scen.json");
+}
+
+#[test]
+fn pick_winners_raffle_not_fond_rs() {
+    world().run("scenarios/pick_winners_raffle_not_fond.scen.json");
 }
 
 #[test]
