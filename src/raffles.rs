@@ -10,6 +10,14 @@ const MAX_WINNING_TICKETS_PER_RAFFLE: u16 = 100u16;
 
 #[type_abi]
 #[derive(TopDecode, TopEncode)]
+pub struct RaffleDetails<M: ManagedTypeApi> {
+    pub raffle: Raffle<M>,
+    pub tickets_sales: TicketSales<M>,
+    pub results: Option<RaffleResults<M>>,
+}
+
+#[type_abi]
+#[derive(NestedDecode, NestedEncode, TopDecode, TopEncode)]
 pub struct Raffle<M: ManagedTypeApi> {
     id: u64,
     owner: ManagedAddress<M>,
@@ -23,7 +31,7 @@ pub struct Raffle<M: ManagedTypeApi> {
 }
 
 #[type_abi]
-#[derive(TopDecode, TopEncode)]
+#[derive(NestedDecode, NestedEncode, TopDecode, TopEncode)]
 pub struct TicketSales<M: ManagedTypeApi> {
     nb_tickets_sold: u32,
     prize_amount: BigUint<M>,
@@ -31,7 +39,7 @@ pub struct TicketSales<M: ManagedTypeApi> {
 }
 
 #[type_abi]
-#[derive(TopDecode, TopEncode)]
+#[derive(NestedDecode, NestedEncode, TopDecode, TopEncode)]
 pub struct RaffleResults<M: ManagedTypeApi> {
     amount_per_winning_ticket: BigUint<M>,
     winning_tickets: ManagedVec<M, u32>,
@@ -233,18 +241,30 @@ pub trait RafflesModule:
         current
     }
 
-    #[view(getRaffles)]
-    fn get_raffles(&self, skip: usize, size: usize) -> MultiValueEncoded<Raffle<Self::Api>> {
+    #[view(getRafflesDetails)]
+    fn get_raffles_details(
+        &self,
+        skip: usize,
+        size: usize,
+    ) -> MultiValueEncoded<RaffleDetails<Self::Api>> {
         let next_raffle_id = self.raffle_id_counter().get();
 
         if next_raffle_id > 0 {
             (0..next_raffle_id)
-                .map(|raffle_id| self.raffles(raffle_id).get())
+                .map(|raffle_id| RaffleDetails {
+                    raffle: self.raffles(raffle_id).get(),
+                    tickets_sales: self.ticket_sales(raffle_id).get(),
+                    results: if self.raffle_results(raffle_id).is_empty() {
+                        None
+                    } else {
+                        Some(self.raffle_results(raffle_id).get())
+                    },
+                })
                 .skip(skip)
                 .take(size)
                 .collect()
         } else {
-            MultiValueEncoded::<Self::Api, Raffle<Self::Api>>::new()
+            MultiValueEncoded::<Self::Api, RaffleDetails<Self::Api>>::new()
         }
     }
 

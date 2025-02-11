@@ -1,0 +1,40 @@
+{
+  "steps": [
+    {
+      "step": "externalSteps",
+      "path": "create_raffle_2nd.scen.json"
+    },
+    {
+      "step": "scQuery",
+      "tx": {
+        "to": "sc:raffles",
+        "function": "getRafflesDetails",
+        "arguments": ["0", "10"]
+      },
+      "expect": {
+        "out": [
+          {
+            "01-raffle": {
+              "01-id": "u64:0",
+              "02-owner": "address:user",
+              "03-start_timestamp": "u64:100_000_000",
+              "04-end_timestamp": "u64:100_086_400",
+              "05-ticket_token_identifier": "nested:str:TOKEN-000000",
+              "06-ticket_price": "biguint:1000,000000",
+              "07-nb_winning_tickets": "u16:4",
+              "08-burn_percent": "u8:25",
+              "09-description": "nested:str:My Raffle"
+            },
+            "02-tickets_sale": {
+              "01-nb_tickets_sold": "u32:0",
+              "02-prize_amount": "biguint:0",
+              "03-burned_amount": "biguint:0"
+            },
+            "03-results": "u8:0"
+          },
+          "*"
+        ]
+      }
+    }
+  ]
+}

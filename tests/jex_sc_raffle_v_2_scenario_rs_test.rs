@@ -92,6 +92,16 @@ fn deploy_rs() {
 }
 
 #[test]
+fn get_raffles_details_rs() {
+    world().run("scenarios/get_raffles_details.scen.json");
+}
+
+#[test]
+fn get_raffles_details_winners_rs() {
+    world().run("scenarios/get_raffles_details_winners.scen.json");
+}
+
+#[test]
 fn init_rs() {
     world().run("scenarios/init.scen.json");
 }

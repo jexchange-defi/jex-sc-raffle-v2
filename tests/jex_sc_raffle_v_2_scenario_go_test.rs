@@ -85,6 +85,16 @@ fn deploy_go() {
 }
 
 #[test]
+fn get_raffles_details_go() {
+    world().run("scenarios/get_raffles_details.scen.json");
+}
+
+#[test]
+fn get_raffles_details_winners_go() {
+    world().run("scenarios/get_raffles_details_winners.scen.json");
+}
+
+#[test]
 fn init_go() {
     world().run("scenarios/init.scen.json");
 }

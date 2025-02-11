@@ -239,17 +239,17 @@ where
             .original_result()
     }
 
-    pub fn get_raffles<
+    pub fn get_raffles_details<
         Arg0: ProxyArg<usize>,
         Arg1: ProxyArg<usize>,
     >(
         self,
         skip: Arg0,
         size: Arg1,
-    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, MultiValueEncoded<Env::Api, Raffle<Env::Api>>> {
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, MultiValueEncoded<Env::Api, RaffleDetails<Env::Api>>> {
         self.wrapped_tx
             .payment(NotPayable)
-            .raw_call("getRaffles")
+            .raw_call("getRafflesDetails")
             .argument(&skip)
             .argument(&size)
             .original_result()
@@ -277,6 +277,19 @@ where
         self.wrapped_tx
             .payment(NotPayable)
             .raw_call("getTicketSales")
+            .argument(&id)
+            .original_result()
+    }
+
+    pub fn raffle_results<
+        Arg0: ProxyArg<u64>,
+    >(
+        self,
+        id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, RaffleResults<Env::Api>> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("getRaffleResults")
             .argument(&id)
             .original_result()
     }
@@ -342,10 +355,42 @@ where
             .argument(&nb_tickets)
             .original_result()
     }
+
+    pub fn pick_winners_endpoint<
+        Arg0: ProxyArg<u64>,
+    >(
+        self,
+        raffle_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, NotPayable, Gas, ()> {
+        self.wrapped_tx
+            .payment(NotPayable)
+            .raw_call("pickWinners")
+            .argument(&raffle_id)
+            .original_result()
+    }
+
+    pub fn claim_endpoint(
+        self,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("claim")
+            .original_result()
+    }
 }
 
 #[type_abi]
 #[derive(TopDecode, TopEncode)]
+pub struct RaffleDetails<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub raffle: Raffle<Api>,
+    pub tickets_sales: TicketSales<Api>,
+    pub results: Option<RaffleResults<Api>>,
+}
+
+#[type_abi]
+#[derive(NestedDecode, NestedEncode, TopDecode, TopEncode)]
 pub struct Raffle<Api>
 where
     Api: ManagedTypeApi,
@@ -362,7 +407,7 @@ where
 }
 
 #[type_abi]
-#[derive(TopDecode, TopEncode)]
+#[derive(NestedDecode, NestedEncode, TopDecode, TopEncode)]
 pub struct TicketSales<Api>
 where
     Api: ManagedTypeApi,
@@ -370,4 +415,14 @@ where
     pub nb_tickets_sold: u32,
     pub prize_amount: BigUint<Api>,
     pub burned_amount: BigUint<Api>,
+}
+
+#[type_abi]
+#[derive(NestedDecode, NestedEncode, TopDecode, TopEncode)]
+pub struct RaffleResults<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub amount_per_winning_ticket: BigUint<Api>,
+    pub winning_tickets: ManagedVec<Api, u32>,
 }
