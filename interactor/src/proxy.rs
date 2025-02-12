@@ -312,8 +312,11 @@ where
             .original_result()
     }
 
-    /// Create a raffle 
-    /// burn_percent: % of burn once protocol fees are deducted. 
+    /// Create a raffle. 
+    ///  
+    /// Note that burn and owner percent are calculated after protocol fees are deducted 
+    /// burn_percent: % of burn (max 100%) 
+    /// owner_percent: % going to owner (max 25%) 
     pub fn create_raffle_endpoint<
         Arg0: ProxyArg<u64>,
         Arg1: ProxyArg<ManagedBuffer<Env::Api>>,
@@ -321,6 +324,7 @@ where
         Arg3: ProxyArg<BigUint<Env::Api>>,
         Arg4: ProxyArg<u16>,
         Arg5: ProxyArg<u8>,
+        Arg6: ProxyArg<u8>,
     >(
         self,
         duration_seconds: Arg0,
@@ -329,6 +333,7 @@ where
         ticket_price: Arg3,
         nb_winning_tickets: Arg4,
         burn_percent: Arg5,
+        owner_percent: Arg6,
     ) -> TxTypedCall<Env, From, To, (), Gas, u64> {
         self.wrapped_tx
             .raw_call("createRaffle")
@@ -338,6 +343,7 @@ where
             .argument(&ticket_price)
             .argument(&nb_winning_tickets)
             .argument(&burn_percent)
+            .argument(&owner_percent)
             .original_result()
     }
 
@@ -376,6 +382,18 @@ where
             .raw_call("claim")
             .original_result()
     }
+
+    pub fn boost_raffle_endpoint<
+        Arg0: ProxyArg<u64>,
+    >(
+        self,
+        raffle_id: Arg0,
+    ) -> TxTypedCall<Env, From, To, (), Gas, ()> {
+        self.wrapped_tx
+            .raw_call("boostRaffle")
+            .argument(&raffle_id)
+            .original_result()
+    }
 }
 
 #[type_abi]
@@ -403,6 +421,7 @@ where
     pub ticket_price: BigUint<Api>,
     pub nb_winning_tickets: u16,
     pub burn_percent: u8,
+    pub owner_percent: u8,
     pub description: ManagedBuffer<Api>,
 }
 
@@ -415,6 +434,7 @@ where
     pub nb_tickets_sold: u32,
     pub prize_amount: BigUint<Api>,
     pub burned_amount: BigUint<Api>,
+    pub owner_amount: BigUint<Api>,
 }
 
 #[type_abi]
