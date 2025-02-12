@@ -51,7 +51,8 @@ pub struct RaffleResults<M: ManagedTypeApi> {
 
 #[multiversx_sc::module]
 pub trait RafflesModule:
-    crate::burn::BurnModule
+    multiversx_sc_modules::only_admin::OnlyAdminModule
+    + crate::burn::BurnModule
     + crate::fees::FeesModule
     + crate::random::RandomModule
     + crate::tickets::TicketsModule
@@ -183,7 +184,9 @@ pub trait RafflesModule:
 
         let raffle = raffle_mapper.get();
 
-        require!(raffle.owner == self.blockchain().get_caller(), "Not owner");
+        if !self.is_admin(self.blockchain().get_caller()) {
+            require!(raffle.owner == self.blockchain().get_caller(), "Not owner");
+        }
 
         self.require_raffle_is_ended(&raffle);
 

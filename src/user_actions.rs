@@ -3,7 +3,8 @@ use multiversx_sc::imports::*;
 
 #[multiversx_sc::module]
 pub trait UserActionsModule:
-    multiversx_sc_modules::pause::PauseModule
+    multiversx_sc_modules::only_admin::OnlyAdminModule
+    + multiversx_sc_modules::pause::PauseModule
     + crate::burn::BurnModule
     + crate::fees::FeesModule
     + crate::raffles::RafflesModule

@@ -135,6 +135,11 @@ fn pick_winners_go() {
 }
 
 #[test]
+fn pick_winners_by_admin_go() {
+    world().run("scenarios/pick_winners_by_admin.scen.json");
+}
+
+#[test]
 fn pick_winners_not_ended_go() {
     world().run("scenarios/pick_winners_not_ended.scen.json");
 }

@@ -142,6 +142,11 @@ fn pick_winners_rs() {
 }
 
 #[test]
+fn pick_winners_by_admin_rs() {
+    world().run("scenarios/pick_winners_by_admin.scen.json");
+}
+
+#[test]
 fn pick_winners_not_ended_rs() {
     world().run("scenarios/pick_winners_not_ended.scen.json");
 }
