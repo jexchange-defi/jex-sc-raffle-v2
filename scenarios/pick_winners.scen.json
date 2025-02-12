@@ -13,7 +13,7 @@
     {
       "step": "scCall",
       "tx": {
-        "from": "address:user",
+        "from": "address:raffle_owner",
         "to": "sc:raffles",
         "function": "pickWinners",
         "arguments": ["0"],
@@ -32,11 +32,11 @@
       "accounts": {
         "sc:raffles": {
           "nonce": "0",
-          "balance": "5400,000000",
+          "balance": "4320,000000",
           "code": "*",
           "storage": {
             "str:raffle_results|u64:0": {
-              "01-amount_per_winning_ticket": "biguint:1350,000000",
+              "01-amount_per_winning_ticket": "biguint:1080,000000",
               "02-winning_tickets": "u32:4|u32:6|u32:7|u32:1|u32:5"
             },
             "+": "*"

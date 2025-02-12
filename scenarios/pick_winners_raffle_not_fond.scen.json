@@ -7,7 +7,7 @@
     {
       "step": "scCall",
       "tx": {
-        "from": "address:user",
+        "from": "address:raffle_owner",
         "to": "sc:raffles",
         "function": "pickWinners",
         "arguments": ["999"],

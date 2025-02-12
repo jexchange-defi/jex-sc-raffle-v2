@@ -29,7 +29,8 @@
           "str:TOKEN-000000",
           "1000,000000",
           "999",
-          "25"
+          "25",
+          "15"
         ],
         "gasLimit": "10,000,000",
         "gasPrice": "0"
@@ -53,7 +54,8 @@
           "str:TOKEN-000000",
           "1000,000000",
           "4",
-          "25"
+          "25",
+          "15"
         ],
         "gasLimit": "10,000,000",
         "gasPrice": "0"
@@ -77,7 +79,8 @@
           "str:TOKEN-000000",
           "1000,000000",
           "4",
-          "25"
+          "25",
+          "15"
         ],
         "gasLimit": "10,000,000",
         "gasPrice": "0"
@@ -101,7 +104,8 @@
           "str:TOKEN-000000",
           "1000,000000",
           "4",
-          "200"
+          "200",
+          "15"
         ],
         "gasLimit": "10,000,000",
         "gasPrice": "0"
@@ -109,6 +113,56 @@
       "expect": {
         "status": "4",
         "message": "str:Invalid burn percent",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "scCall",
+      "tx": {
+        "from": "address:user",
+        "to": "sc:raffles",
+        "function": "createRaffle",
+        "arguments": [
+          "86,400",
+          "str:My Raffle",
+          "str:TOKEN-000000",
+          "1000,000000",
+          "4",
+          "25",
+          "50"
+        ],
+        "gasLimit": "10,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "status": "4",
+        "message": "str:Invalid owner percent",
+        "gas": "*",
+        "refund": "*"
+      }
+    },
+    {
+      "step": "scCall",
+      "tx": {
+        "from": "address:user",
+        "to": "sc:raffles",
+        "function": "createRaffle",
+        "arguments": [
+          "86,400",
+          "str:My Raffle",
+          "str:TOKEN-000000",
+          "1000,000000",
+          "4",
+          "80",
+          "25"
+        ],
+        "gasLimit": "10,000,000",
+        "gasPrice": "0"
+      },
+      "expect": {
+        "status": "4",
+        "message": "str:Invalid burn+owner percent",
         "gas": "*",
         "refund": "*"
       }

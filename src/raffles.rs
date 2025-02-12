@@ -1,7 +1,9 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
+const MAX_PERCENT: u8 = 100u8;
 const MAX_BURN_PERCENT: u8 = 100u8;
+const MAX_OWNER_PERCENT: u8 = 25u8;
 
 const MIN_DURATION_SECONDS: u64 = 3_000u64;
 const MAX_DURATION_SECONDS: u64 = 2_592_000u64; // 30 days
@@ -27,6 +29,7 @@ pub struct Raffle<M: ManagedTypeApi> {
     ticket_price: BigUint<M>,
     nb_winning_tickets: u16,
     burn_percent: u8,
+    owner_percent: u8,
     description: ManagedBuffer<M>,
 }
 
@@ -36,6 +39,7 @@ pub struct TicketSales<M: ManagedTypeApi> {
     nb_tickets_sold: u32,
     prize_amount: BigUint<M>,
     burned_amount: BigUint<M>,
+    owner_amount: BigUint<M>,
 }
 
 #[type_abi]
@@ -61,6 +65,7 @@ pub trait RafflesModule:
         ticket_price: BigUint,
         nb_winning_tickets: u16,
         burn_percent: u8,
+        owner_percent: u8,
     ) -> u64 {
         require!(
             nb_winning_tickets > 0u16 && nb_winning_tickets <= MAX_WINNING_TICKETS_PER_RAFFLE,
@@ -73,6 +78,13 @@ pub trait RafflesModule:
         );
 
         require!(burn_percent <= MAX_BURN_PERCENT, "Invalid burn percent");
+
+        require!(owner_percent <= MAX_OWNER_PERCENT, "Invalid owner percent");
+
+        require!(
+            burn_percent + owner_percent <= MAX_PERCENT,
+            "Invalid burn+owner percent"
+        );
 
         let raffle_id = self.get_next_raffle_id();
 
@@ -89,6 +101,7 @@ pub trait RafflesModule:
             ticket_price,
             nb_winning_tickets,
             burn_percent,
+            owner_percent,
             description,
         };
 
@@ -98,6 +111,7 @@ pub trait RafflesModule:
             nb_tickets_sold: 0u32,
             prize_amount: BigUint::zero(),
             burned_amount: BigUint::zero(),
+            owner_amount: BigUint::zero(),
         });
 
         raffle_id
@@ -135,7 +149,10 @@ pub trait RafflesModule:
 
         let burn_amount = payment_minus_fee.amount.clone() * raffle.burn_percent as u32 / 100u32;
 
-        let prize_amount = payment_minus_fee.amount.clone() - burn_amount.clone();
+        let owner_amount = payment_minus_fee.amount.clone() * raffle.owner_percent as u32 / 100u32;
+
+        let prize_amount =
+            payment_minus_fee.amount.clone() - burn_amount.clone() - owner_amount.clone();
 
         let mut ticket_sales = self.ticket_sales(raffle_id).get();
 
@@ -143,6 +160,7 @@ pub trait RafflesModule:
 
         ticket_sales.nb_tickets_sold += nb_tickets as u32;
         ticket_sales.burned_amount += burn_amount.clone();
+        ticket_sales.owner_amount += owner_amount.clone();
         ticket_sales.prize_amount += prize_amount;
 
         self.ticket_sales(raffle_id).set(&ticket_sales);
@@ -154,6 +172,13 @@ pub trait RafflesModule:
             payment.token_nonce,
             burn_amount.clone(),
         ));
+
+        self.send().direct_non_zero(
+            &raffle.owner,
+            &payment.token_identifier,
+            payment.token_nonce,
+            &owner_amount,
+        );
     }
 
     fn pick_raffle_winners(&self, raffle_id: u64) {

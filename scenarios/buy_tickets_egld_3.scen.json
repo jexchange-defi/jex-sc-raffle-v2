@@ -63,12 +63,13 @@
           }
         },
         "sc:raffles": {
-          "balance": "5400,000000",
+          "balance": "4320,000000",
           "storage": {
             "str:ticket_sales|u64:0": {
               "01-nb_tickets_sold": "u32:8",
-              "02-prize_amount": "biguint:5400,000000",
-              "03-burned_amount": "biguint:1800,000000"
+              "02-prize_amount": "biguint:4320,000000",
+              "03-burned_amount": "biguint:1800,000000",
+              "04-owner_amount": "biguint:1080,000000"
             },
             "+": ""
           }

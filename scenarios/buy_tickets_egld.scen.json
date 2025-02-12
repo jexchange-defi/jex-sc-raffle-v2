@@ -42,6 +42,10 @@
           "nonce": "0",
           "balance": "1,000,000,000,200,000,000"
         },
+        "address:raffle_owner": {
+          "nonce": "1",
+          "balance": "270,000000"
+        },
         "address:user": {
           "nonce": "1",
           "balance": "0",
@@ -63,12 +67,13 @@
           }
         },
         "sc:raffles": {
-          "balance": "1350,000000",
+          "balance": "1080,000000",
           "storage": {
             "str:ticket_sales|u64:0": {
               "01-nb_tickets_sold": "u32:2",
-              "02-prize_amount": "biguint:1350,000000",
-              "03-burned_amount": "biguint:450,000000"
+              "02-prize_amount": "biguint:1080,000000",
+              "03-burned_amount": "biguint:450,000000",
+              "04-owner_amount": "biguint:270,000000"
             },
             "+": ""
           }

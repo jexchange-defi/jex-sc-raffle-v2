@@ -32,8 +32,8 @@
       "step": "checkState",
       "accounts": {
         "address:user": {
-          "nonce": "3",
-          "balance": "1350,000000",
+          "nonce": "2",
+          "balance": "1080,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [
@@ -46,7 +46,7 @@
           }
         },
         "sc:raffles": {
-          "balance": "4050,000000",
+          "balance": "3240,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [

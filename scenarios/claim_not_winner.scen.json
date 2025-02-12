@@ -46,7 +46,7 @@
           }
         },
         "sc:raffles": {
-          "balance": "5400,000000",
+          "balance": "4320,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [

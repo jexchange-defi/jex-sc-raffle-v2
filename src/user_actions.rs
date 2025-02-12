@@ -10,8 +10,11 @@ pub trait UserActionsModule:
     + crate::random::RandomModule
     + crate::tickets::TicketsModule
 {
-    /// Create a raffle
-    /// burn_percent: % of burn once protocol fees are deducted.
+    /// Create a raffle.
+    ///
+    /// Note that burn and owner percent are calculated after protocol fees are deducted
+    /// burn_percent: % of burn (max 100%)
+    /// owner_percent: % going to owner (max 25%)
     #[payable("EGLD")]
     #[endpoint(createRaffle)]
     fn create_raffle_endpoint(
@@ -22,6 +25,7 @@ pub trait UserActionsModule:
         ticket_price: BigUint,
         nb_winning_tickets: u16,
         burn_percent: u8,
+        owner_percent: u8,
     ) -> u64 {
         self.require_not_paused();
 
@@ -37,6 +41,7 @@ pub trait UserActionsModule:
             ticket_price,
             nb_winning_tickets,
             burn_percent,
+            owner_percent,
         )
     }
 

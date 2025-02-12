@@ -16,23 +16,25 @@
           {
             "01-raffle": {
               "01-id": "u64:0",
-              "02-owner": "address:user",
+              "02-owner": "address:raffle_owner",
               "03-start_timestamp": "u64:100_000_000",
               "04-end_timestamp": "u64:100_086_400",
               "05-ticket_token_identifier": "nested:str:EGLD",
               "06-ticket_price": "biguint:1000,000000",
               "07-nb_winning_tickets": "u16:4",
               "08-burn_percent": "u8:25",
-              "09-description": "nested:str:My EGLD Raffle"
+              "09-owner_percent": "u8:15",
+              "10-description": "nested:str:My EGLD Raffle"
             },
             "02-tickets_sale": {
               "01-nb_tickets_sold": "u32:8",
-              "02-prize_amount": "biguint:5400,000000",
-              "03-burned_amount": "biguint:1800,000000"
+              "02-prize_amount": "biguint:4320,000000",
+              "03-burned_amount": "biguint:1800,000000",
+              "04-owner_amount": "biguint:1080,000000"
             },
             "03-results": {
               "01-opt": "u8:1",
-              "02-amount_per_winning_ticket": "biguint:1350,000000",
+              "02-amount_per_winning_ticket": "biguint:1080,000000",
               "03-winning_tickets": "u32:4|u32:6|u32:7|u32:1|u32:5"
             }
           }
