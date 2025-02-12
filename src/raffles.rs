@@ -130,12 +130,7 @@ pub trait RafflesModule:
 
         let raffle = raffle_mapper.get();
 
-        let now = self.blockchain().get_block_timestamp();
-
-        require!(
-            raffle.start_timestamp <= now && now <= raffle.end_timestamp,
-            "Not in tickets sale period"
-        );
+        self.require_raffle_is_not_ended(&raffle);
 
         let expected_payment = EgldOrEsdtTokenPayment::new(
             raffle.ticket_token_identifier,
@@ -190,9 +185,7 @@ pub trait RafflesModule:
 
         require!(raffle.owner == self.blockchain().get_caller(), "Not owner");
 
-        let now = self.blockchain().get_block_timestamp();
-
-        require!(now > raffle.end_timestamp, "Still in tickets sale period");
+        self.require_raffle_is_ended(&raffle);
 
         let tickets_sales = self.ticket_sales(raffle_id).get();
 
@@ -256,6 +249,49 @@ pub trait RafflesModule:
 
         self.send()
             .direct_non_zero(user, &raffle.ticket_token_identifier, 0u64, &amount_out);
+    }
+
+    fn boost_raffle(
+        &self,
+        raffle_id: u64,
+        token_id: &EgldOrEsdtTokenIdentifier,
+        boost_amount: &BigUint,
+    ) {
+        let raffle_mapper = self.raffles(raffle_id);
+
+        require!(!raffle_mapper.is_empty(), "Raffle not found");
+
+        let raffle = raffle_mapper.get();
+
+        require!(
+            &raffle.ticket_token_identifier == token_id,
+            "Invalid token ID"
+        );
+
+        self.require_raffle_is_not_ended(&raffle);
+
+        let tickets_sales_mapper = self.ticket_sales(raffle_id);
+
+        let mut tickets_sales = tickets_sales_mapper.get();
+
+        tickets_sales.prize_amount += boost_amount.clone();
+
+        tickets_sales_mapper.set(&tickets_sales);
+    }
+
+    fn require_raffle_is_ended(&self, raffle: &Raffle<Self::Api>) {
+        let now = self.blockchain().get_block_timestamp();
+
+        require!(now > raffle.end_timestamp, "Still in tickets sale period");
+    }
+
+    fn require_raffle_is_not_ended(&self, raffle: &Raffle<Self::Api>) {
+        let now = self.blockchain().get_block_timestamp();
+
+        require!(
+            raffle.start_timestamp <= now && now <= raffle.end_timestamp,
+            "Not in tickets sale period"
+        );
     }
 
     fn get_next_raffle_id(&self) -> u64 {

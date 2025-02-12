@@ -74,4 +74,14 @@ pub trait UserActionsModule:
 
         self.claim_multi(&self.blockchain().get_caller(), &payments);
     }
+
+    #[payable]
+    #[endpoint(boostRaffle)]
+    fn boost_raffle_endpoint(&self, raffle_id: u64) {
+        self.require_not_paused();
+
+        let (token_id, amount) = self.call_value().egld_or_single_fungible_esdt();
+
+        self.boost_raffle(raffle_id, &token_id, &amount);
+    }
 }

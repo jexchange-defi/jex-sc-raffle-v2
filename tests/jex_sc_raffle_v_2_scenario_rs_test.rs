@@ -12,6 +12,26 @@ fn world() -> ScenarioWorld {
 }
 
 #[test]
+fn boost_raffle_rs() {
+    world().run("scenarios/boost_raffle.scen.json");
+}
+
+#[test]
+fn boost_raffle_ended_rs() {
+    world().run("scenarios/boost_raffle_ended.scen.json");
+}
+
+#[test]
+fn boost_raffle_invalid_payment_rs() {
+    world().run("scenarios/boost_raffle_invalid_payment.scen.json");
+}
+
+#[test]
+fn boost_raffle_not_found_rs() {
+    world().run("scenarios/boost_raffle_not_found.scen.json");
+}
+
+#[test]
 fn buy_tickets_egld_rs() {
     world().run("scenarios/buy_tickets_egld.scen.json");
 }
