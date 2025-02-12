@@ -2,7 +2,7 @@
   "steps": [
     {
       "step": "externalSteps",
-      "path": "deploy.scen.json"
+      "path": "init.scen.json"
     },
     {
       "step": "setState",
@@ -25,27 +25,10 @@
         "gasPrice": "0"
       },
       "expect": {
-        "status": "0",
-        "message": "",
+        "status": "4",
+        "message": "str:Token ID already set",
         "gas": "*",
         "refund": "*"
-      }
-    },
-    {
-      "step": "checkState",
-      "accounts": {
-        "sc:raffles": {
-          "nonce": "0",
-          "balance": "0",
-          "code": "*",
-          "esdt": {
-            "str:TCOLL-000000": {}
-          },
-          "storage": {
-            "+": "*"
-          }
-        },
-        "+": ""
       }
     }
   ]

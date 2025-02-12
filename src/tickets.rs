@@ -3,7 +3,7 @@ multiversx_sc::derive_imports!();
 
 use multiversx_sc::contract_base::ManagedSerializer;
 
-const TICKET_COLLECTION_DISPLAY_NAME: &[u8] = b"JEX Raffle Ticket";
+const TICKET_COLLECTION_DISPLAY_NAME: &[u8] = b"JEXRaffleTicket";
 const TICKET_COLLECTION_TICKER: &[u8] = b"JEXRAFT";
 
 #[derive(TopDecode, TopEncode)]
@@ -16,19 +16,23 @@ pub struct TicketAttributes {
 #[multiversx_sc::module]
 pub trait TicketsModule {
     fn issue_ticket_collection(&self) {
-        require!(
-            self.ticket_collection_id().is_empty(),
-            "Ticket collection already issued"
-        );
+        let mut mapper = self.ticket_collection_id();
+
+        if mapper.get_token_state().is_pending() {
+            mapper.clear();
+        }
 
         let payment_amount = self.call_value().egld().clone();
 
-        self.ticket_collection_id().issue_and_set_all_roles(
+        let caller = self.blockchain().get_caller();
+
+        mapper.issue_and_set_all_roles(
+            EsdtTokenType::NonFungible,
             payment_amount,
             ManagedBuffer::from(TICKET_COLLECTION_DISPLAY_NAME),
             ManagedBuffer::from(TICKET_COLLECTION_TICKER),
             0,
-            None,
+            Some(self.callbacks().collection_issue_callback(&caller)),
         );
     }
 
@@ -39,10 +43,7 @@ pub trait TicketsModule {
         nb_tickets: u16,
         user: &ManagedAddress,
     ) {
-        require!(
-            !self.ticket_collection_id().is_empty(),
-            "Ticket collection not issued"
-        );
+        self.ticket_collection_id().require_issued_or_set();
 
         let collection_id = self.ticket_collection_id().get_token_id();
 
@@ -90,5 +91,24 @@ pub trait TicketsModule {
 
     #[view(getTicketCollectionId)]
     #[storage_mapper("ticket_collection_id")]
-    fn ticket_collection_id(&self) -> FungibleTokenMapper;
+    fn ticket_collection_id(&self) -> NonFungibleTokenMapper;
+
+    #[callback]
+    fn collection_issue_callback(
+        &self,
+        caller: &ManagedAddress,
+        #[call_result] result: ManagedAsyncCallResult<TokenIdentifier>,
+    ) {
+        match result {
+            ManagedAsyncCallResult::Ok(token_id) => {
+                self.ticket_collection_id().set_token_id(token_id);
+            }
+            ManagedAsyncCallResult::Err(_) => {
+                self.ticket_collection_id().clear();
+
+                let egld = self.call_value().egld();
+                self.tx().to(caller).egld(egld).transfer_if_not_empty();
+            }
+        }
+    }
 }

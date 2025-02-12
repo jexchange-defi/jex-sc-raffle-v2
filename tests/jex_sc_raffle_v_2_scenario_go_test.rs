@@ -125,6 +125,11 @@ fn issue_ticket_collection_go() {
 }
 
 #[test]
+fn issue_ticket_collection_already_issued_go() {
+    world().run("scenarios/issue_ticket_collection_already_issued.scen.json");
+}
+
+#[test]
 fn issue_ticket_collection_not_admin_go() {
     world().run("scenarios/issue_ticket_collection_not_admin.scen.json");
 }

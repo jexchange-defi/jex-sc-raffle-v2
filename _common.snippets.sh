@@ -14,9 +14,9 @@ setFeesReceiver() {
 
     read -p "Receiver address: " FEES_RECEIVER
 
-    mxpy contract call ${SC_ADDRESS} --recall-nonce --pem=${KEYFILE} --gas-limit=5000000 \
+    mxpy contract call ${SC_ADDRESS} --recall-nonce --keyfile=${KEYFILE} --gas-limit=5000000 \
         --function="setFeesReceiver" \
-        --arguments "str:${FEES_RECEIVER}" \
+        --arguments "${FEES_RECEIVER}" \
         --proxy=${PROXY} --chain=${CHAIN} --send || return
 }
 
@@ -25,9 +25,9 @@ setProtocolFeePercent() {
 
     read -p "Fee percent (0-100): " FEE_PERCENT
 
-    mxpy contract call ${SC_ADDRESS} --recall-nonce --pem=${KEYFILE} --gas-limit=5000000 \
+    mxpy contract call ${SC_ADDRESS} --recall-nonce --keyfile=${KEYFILE} --gas-limit=5000000 \
         --function="setProtocolFeePercent" \
-        --arguments "str:${FEE_PERCENT}" \
+        --arguments "${FEE_PERCENT}" \
         --proxy=${PROXY} --chain=${CHAIN} --send || return
 }
 
@@ -36,26 +36,25 @@ setRaffleCreationFee() {
 
     read -p "Fee (EGLD): " EGLD_FEE
 
-    mxpy contract call ${SC_ADDRESS} --recall-nonce --pem=${KEYFILE} --gas-limit=5000000 \
+    mxpy contract call ${SC_ADDRESS} --recall-nonce --keyfile=${KEYFILE} --gas-limit=5000000 \
         --function="setRaffleCreationFee" \
-        --arguments "str:${EGLD_FEE}" \
+        --arguments "${EGLD_FEE}" \
         --proxy=${PROXY} --chain=${CHAIN} --send || return
 }
 
 issueTicketCollection() {
     KEYFILE=$1
 
-    mxpy contract call ${SC_ADDRESS} --recall-nonce --pem=${KEYFILE} --gas-limit=5000000 \
+    mxpy contract call ${SC_ADDRESS} --recall-nonce --keyfile=${KEYFILE} --gas-limit=75000000 \
         --function="issueTicketCollection" \
-        --arguments "str:${EGLD_FEE}" \
-        --value "5000000000000000" \
+        --value "50000000000000000" \
         --proxy=${PROXY} --chain=${CHAIN} --send || return
 }
 
 pause() {
     KEYFILE=$1
 
-    mxpy contract call ${SC_ADDRESS} --recall-nonce --pem=${KEYFILE} --gas-limit=5000000 \
+    mxpy contract call ${SC_ADDRESS} --recall-nonce --keyfile=${KEYFILE} --gas-limit=5000000 \
         --function="pause" \
         --proxy=${PROXY} --chain=${CHAIN} --send || return
 }
@@ -63,7 +62,7 @@ pause() {
 unpause() {
     KEYFILE=$1
 
-    mxpy contract call ${SC_ADDRESS} --recall-nonce --pem=${KEYFILE} --gas-limit=5000000 \
+    mxpy contract call ${SC_ADDRESS} --recall-nonce --keyfile=${KEYFILE} --gas-limit=5000000 \
         --function="unpause" \
         --proxy=${PROXY} --chain=${CHAIN} --send || return
 }

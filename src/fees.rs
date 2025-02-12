@@ -1,5 +1,7 @@
 multiversx_sc::imports!();
 
+const MAX_FEE_PERCENT: u32 = 100u32;
+
 #[multiversx_sc::module]
 pub trait FeesModule {
     fn require_creation_fee_payment(&self) -> BigUint {
@@ -54,6 +56,11 @@ pub trait FeesModule {
     }
 
     fn set_protocol_fee_percent(&self, fee_percent: u32) {
+        require!(
+            fee_percent <= MAX_FEE_PERCENT,
+            "Invalid protocol fee percent"
+        );
+
         self.protocol_fee_percent().set(fee_percent);
     }
 
