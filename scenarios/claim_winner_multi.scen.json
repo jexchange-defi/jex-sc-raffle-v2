@@ -33,7 +33,7 @@
       "accounts": {
         "address:user3": {
           "nonce": "2",
-          "balance": "3240,000000",
+          "balance": "2160,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [
@@ -46,13 +46,13 @@
           }
         },
         "sc:raffles": {
-          "balance": "1080,000000",
+          "balance": "2160,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [
                 {
                   "balance": "0",
-                  "nonce": "2"
+                  "nonce": "3"
                 }
               ]
             }

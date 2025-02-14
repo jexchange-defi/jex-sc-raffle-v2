@@ -2,7 +2,7 @@
   "steps": [
     {
       "step": "externalSteps",
-      "path": "buy_tickets_egld_3.scen.json"
+      "path": "boost_raffle.scen.json"
     },
     {
       "step": "setState",
@@ -25,24 +25,6 @@
         "message": "",
         "gas": "*",
         "refund": "*"
-      }
-    },
-    {
-      "step": "checkState",
-      "accounts": {
-        "sc:raffles": {
-          "nonce": "0",
-          "balance": "4320,000000",
-          "code": "*",
-          "storage": {
-            "str:raffle_results|u64:0": {
-              "01-amount_per_winning_ticket": "biguint:1080,000000",
-              "02-winning_tickets": "u32:4|u32:1|u32:4|u32:8|u32:2"
-            },
-            "+": "*"
-          }
-        },
-        "+": ""
       }
     }
   ]

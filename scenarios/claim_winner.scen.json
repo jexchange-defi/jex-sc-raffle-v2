@@ -7,12 +7,12 @@
     {
       "step": "scCall",
       "tx": {
-        "from": "address:user",
+        "from": "address:user3",
         "to": "sc:raffles",
         "esdtValue": [
           {
             "tokenIdentifier": "str:TCOLL-000000",
-            "nonce": "1",
+            "nonce": "3",
             "value": "1"
           }
         ],
@@ -31,28 +31,28 @@
     {
       "step": "checkState",
       "accounts": {
-        "address:user": {
+        "address:user3": {
           "nonce": "2",
-          "balance": "1080,000000",
+          "balance": "2160,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [
                 {
                   "balance": "0",
-                  "nonce": "1"
+                  "nonce": "3"
                 }
               ]
             }
           }
         },
         "sc:raffles": {
-          "balance": "3240,000000",
+          "balance": "2160,000000",
           "esdt": {
             "str:TCOLL-000000": {
               "instances": [
                 {
                   "balance": "0",
-                  "nonce": "2"
+                  "nonce": "3"
                 }
               ]
             }

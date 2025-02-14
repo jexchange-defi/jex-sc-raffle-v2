@@ -7,10 +7,12 @@ pub trait RandomModule {
 
         let mut picked_ids = ManagedVec::<Self::Api, u32>::new();
 
-        for _ in 0u16..nb_ids {
-            let id = rng.next_u32_in_range(1u32, max_id);
+        if max_id > 1u32 {
+            for _ in 0u16..nb_ids {
+                let id = rng.next_u32_in_range(1u32, max_id);
 
-            picked_ids.push(id);
+                picked_ids.push(id);
+            }
         }
 
         picked_ids

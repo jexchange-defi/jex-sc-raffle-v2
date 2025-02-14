@@ -35,7 +35,7 @@
             "03-results": {
               "01-opt": "u8:1",
               "02-amount_per_winning_ticket": "biguint:1080,000000",
-              "03-winning_tickets": "u32:4|u32:6|u32:7|u32:1|u32:5"
+              "03-winning_tickets": "u32:4|u32:1|u32:4|u32:8|u32:2"
             }
           }
         ]

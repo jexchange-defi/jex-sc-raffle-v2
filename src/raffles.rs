@@ -197,10 +197,12 @@ pub trait RafflesModule:
         require!(results_mapper.is_empty(), "Winners already picked");
 
         let amount_per_winning_ticket =
-            tickets_sales.prize_amount / (raffle.nb_winning_tickets as u32);
+            tickets_sales.prize_amount.clone() / (raffle.nb_winning_tickets as u32);
 
-        let winning_tickets =
-            self.pick_random_ids(tickets_sales.nb_tickets_sold, raffle.nb_winning_tickets);
+        let winning_tickets = self.pick_random_ids(
+            tickets_sales.nb_tickets_sold + 1u32,
+            raffle.nb_winning_tickets,
+        );
 
         let raffle_results = RaffleResults {
             amount_per_winning_ticket,
@@ -208,6 +210,16 @@ pub trait RafflesModule:
         };
 
         results_mapper.set(&raffle_results);
+
+        // return boosted rewards when no tickets sold
+        if tickets_sales.nb_tickets_sold == 0 {
+            self.send().direct_non_zero(
+                &raffle.owner,
+                &raffle.ticket_token_identifier,
+                0u64,
+                &tickets_sales.prize_amount,
+            );
+        }
     }
 
     fn claim_multi(&self, user: &ManagedAddress, payments: &ManagedVec<EsdtTokenPayment>) {
