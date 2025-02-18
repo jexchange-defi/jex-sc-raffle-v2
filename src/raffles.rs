@@ -199,10 +199,8 @@ pub trait RafflesModule:
         let amount_per_winning_ticket =
             tickets_sales.prize_amount.clone() / (raffle.nb_winning_tickets as u32);
 
-        let winning_tickets = self.pick_random_ids(
-            tickets_sales.nb_tickets_sold + 1u32,
-            raffle.nb_winning_tickets,
-        );
+        let winning_tickets =
+            self.pick_random_ids(tickets_sales.nb_tickets_sold, raffle.nb_winning_tickets);
 
         let raffle_results = RaffleResults {
             amount_per_winning_ticket,
