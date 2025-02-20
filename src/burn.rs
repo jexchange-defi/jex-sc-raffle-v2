@@ -3,10 +3,12 @@ multiversx_sc::imports!();
 #[multiversx_sc::module]
 pub trait BurnModule {
     fn burn(&self, payment: &EgldOrEsdtTokenPayment) {
-        if payment.token_identifier.is_egld() {
-            self.burn_egld(payment);
-        } else {
-            self.burn_esdt(payment);
+        if payment.amount > 0 {
+            if payment.token_identifier.is_egld() {
+                self.burn_egld(payment);
+            } else {
+                self.burn_esdt(payment);
+            }
         }
     }
 
@@ -20,17 +22,11 @@ pub trait BurnModule {
 
         let roles = self.blockchain().get_esdt_local_roles(&esdt_id);
 
-        if payment.amount > 0 {
-            if roles.has_role(&EsdtLocalRole::Burn) {
-                self.send().esdt_local_burn(&esdt_id, 0u64, &payment.amount);
-            } else {
-                self.send().direct_esdt(
-                    &self.dead_address().get(),
-                    &esdt_id,
-                    0u64,
-                    &payment.amount,
-                );
-            }
+        if roles.has_role(&EsdtLocalRole::Burn) {
+            self.send().esdt_local_burn(&esdt_id, 0u64, &payment.amount);
+        } else {
+            self.send()
+                .direct_esdt(&self.dead_address().get(), &esdt_id, 0u64, &payment.amount);
         }
     }
 
