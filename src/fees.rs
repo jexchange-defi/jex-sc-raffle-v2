@@ -30,6 +30,12 @@ pub trait FeesModule {
             payment.token_nonce,
             &payment.amount,
         );
+
+        self.fee_sent_event(
+            &self.fees_receiver().get(),
+            &payment.token_identifier,
+            &payment.amount,
+        );
     }
 
     fn take_protocol_fee_from_payment(
@@ -79,4 +85,12 @@ pub trait FeesModule {
     #[view(getRaffleCreationFee)]
     #[storage_mapper("raffle_creation_fee")]
     fn raffle_creation_fee(&self) -> SingleValueMapper<BigUint>;
+
+    #[event("feeSent")]
+    fn fee_sent_event(
+        &self,
+        #[indexed] receiver: &ManagedAddress,
+        #[indexed] token_id: &EgldOrEsdtTokenIdentifier,
+        amount: &BigUint,
+    );
 }

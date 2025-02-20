@@ -1,4 +1,11 @@
 multiversx_sc::imports!();
+multiversx_sc::derive_imports!();
+
+#[type_abi]
+#[derive(TopDecode, TopEncode)]
+pub struct BurnEventData<M: ManagedTypeApi> {
+    amount: BigUint<M>,
+}
 
 #[multiversx_sc::module]
 pub trait BurnModule {
@@ -9,6 +16,13 @@ pub trait BurnModule {
             } else {
                 self.burn_esdt(payment);
             }
+
+            self.burn_event(
+                &payment.token_identifier,
+                BurnEventData {
+                    amount: payment.amount.clone(),
+                },
+            );
         }
     }
 
@@ -36,9 +50,21 @@ pub trait BurnModule {
             payment.token_nonce,
             &BigUint::from(1u32),
         );
+
+        self.ticket_burned_event(&payment.token_identifier, payment.token_nonce);
     }
 
     #[view(getDeadAddress)]
     #[storage_mapper("dead_address")]
     fn dead_address(&self) -> SingleValueMapper<ManagedAddress>;
+
+    #[event("burn")]
+    fn burn_event(
+        &self,
+        #[indexed] token_id: &EgldOrEsdtTokenIdentifier,
+        data: BurnEventData<Self::Api>,
+    );
+
+    #[event("ticketBurned")]
+    fn ticket_burned_event(&self, #[indexed] token_id: &TokenIdentifier, #[indexed] nonce: u64);
 }

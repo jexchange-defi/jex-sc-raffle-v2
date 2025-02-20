@@ -49,6 +49,13 @@ pub struct RaffleResults<M: ManagedTypeApi> {
     winning_tickets: ManagedVec<M, u32>,
 }
 
+#[type_abi]
+#[derive(TopEncode, TopDecode)]
+pub struct TicketsBoughtEventData<M: ManagedTypeApi> {
+    nb_tickets: u16,
+    total_amount: BigUint<M>,
+}
+
 #[multiversx_sc::module]
 pub trait RafflesModule:
     multiversx_sc_modules::only_admin::OnlyAdminModule
@@ -115,6 +122,8 @@ pub trait RafflesModule:
             owner_amount: BigUint::zero(),
         });
 
+        self.raffle_created_event(raffle_id, user, raffle);
+
         raffle_id
     }
 
@@ -175,6 +184,15 @@ pub trait RafflesModule:
             payment.token_nonce,
             &owner_amount,
         );
+
+        self.tickets_bought_event(
+            raffle_id,
+            user,
+            &TicketsBoughtEventData {
+                nb_tickets,
+                total_amount: payment.amount.clone(),
+            },
+        );
     }
 
     fn pick_raffle_winners(&self, raffle_id: u64) {
@@ -218,6 +236,8 @@ pub trait RafflesModule:
                 &tickets_sales.prize_amount,
             );
         }
+
+        self.winners_picked_event(raffle_id, raffle_results.winning_tickets);
     }
 
     fn claim_multi(&self, user: &ManagedAddress, payments: &ManagedVec<EsdtTokenPayment>) {
@@ -262,6 +282,8 @@ pub trait RafflesModule:
 
         self.send()
             .direct_non_zero(user, &raffle.ticket_token_identifier, 0u64, &amount_out);
+
+        self.prize_claimed_event(raffle.id, user, &amount_out);
     }
 
     fn boost_raffle(
@@ -290,6 +312,8 @@ pub trait RafflesModule:
         tickets_sales.prize_amount += boost_amount.clone();
 
         tickets_sales_mapper.set(&tickets_sales);
+
+        self.raffle_boosted_event(raffle_id, boost_amount);
     }
 
     fn require_raffle_is_ended(&self, raffle: &Raffle<Self::Api>) {
@@ -357,4 +381,34 @@ pub trait RafflesModule:
     #[view(getRaffleIdCounter)]
     #[storage_mapper("raffle_id_counter")]
     fn raffle_id_counter(&self) -> SingleValueMapper<u64>;
+
+    #[event("raffleCreated")]
+    fn raffle_created_event(
+        &self,
+        #[indexed] raffle_id: u64,
+        #[indexed] owner: &ManagedAddress,
+        raffle: Raffle<Self::Api>,
+    );
+
+    #[event("ticketsBought")]
+    fn tickets_bought_event(
+        &self,
+        #[indexed] raffle_id: u64,
+        #[indexed] buyer: &ManagedAddress,
+        data: &TicketsBoughtEventData<Self::Api>,
+    );
+
+    #[event("winnersPicked")]
+    fn winners_picked_event(&self, #[indexed] raffle_id: u64, data: ManagedVec<Self::Api, u32>);
+
+    #[event("prizeClaimed")]
+    fn prize_claimed_event(
+        &self,
+        #[indexed] raffle_id: u64,
+        #[indexed] claimant: &ManagedAddress,
+        amount: &BigUint<Self::Api>,
+    );
+
+    #[event("raffleBoosted")]
+    fn raffle_boosted_event(&self, #[indexed] raffle_id: u64, amount: &BigUint<Self::Api>);
 }

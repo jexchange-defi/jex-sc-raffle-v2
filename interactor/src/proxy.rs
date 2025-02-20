@@ -398,6 +398,15 @@ where
 
 #[type_abi]
 #[derive(TopDecode, TopEncode)]
+pub struct BurnEventData<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub amount: BigUint<Api>,
+}
+
+#[type_abi]
+#[derive(TopDecode, TopEncode)]
 pub struct RaffleDetails<Api>
 where
     Api: ManagedTypeApi,
@@ -445,4 +454,14 @@ where
 {
     pub amount_per_winning_ticket: BigUint<Api>,
     pub winning_tickets: ManagedVec<Api, u32>,
+}
+
+#[type_abi]
+#[derive(TopEncode, TopDecode)]
+pub struct TicketsBoughtEventData<Api>
+where
+    Api: ManagedTypeApi,
+{
+    pub nb_tickets: u16,
+    pub total_amount: BigUint<Api>,
 }
